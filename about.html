@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tek Sayfada HTML, CSS ve JS</title>
+
+    <!-- 1. CSS KODLARI BU ALANA YAZILIR -->
+    <style>
+       /*Seçkin Akay*/
+
+body {
+      user-select: none;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background-image: url('https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiOLUAQ6L4XH0K-431Pt1mCg7Fh_LOGIBL1notUKFxa08Q26xSf7pZ9hwnUf02r0D_16_fgpQckENv2viELi8ybaxLRVqNilmH6vjkFiUrsNz3alVVO41JcdX7lYqQuUhLqIOFJWvqDsZw/s1600/bogaz1.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden; 
+    }
+
+   
+    .liquid-glass {
+     
+      --scale-factor: 1; 
+      
+      width: 273px;
+      height: 280px;
+      min-height: 310px; 
+      padding: 33px;
+      border-radius: 28px;
+      isolation: isolate;
+      position: relative;
+      box-shadow: 0 24px 96px rgba(31, 38, 135, 0.21), inset 0 1px 0 rgba(255, 255, 255, 0.5);
+      
+      cursor: grab;
+      transition: all 300ms cubic-bezier(0.4, 0.0, 0.2, 1);
+      
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      box-sizing: border-box;
+      
+      will-change: transform, left, top;
+      
+      
+      transform: scale(var(--scale-factor));
+    }
+
+    
+    .liquid-glass.dragging {
+      cursor: grabbing;
+      transition: none !important; 
+      
+      transform: scale(calc(var(--scale-factor) + 0.03)) translateY(-4px); 
+      z-index: 1000;
+      box-shadow: 0 32px 120px rgba(31, 38, 135, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+    }
+
+    .liquid-glass::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      background-color: rgba(255, 255, 255, 0.03);
+      background-image: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent 50%);
+      pointer-events: none;
+    }
+
+    .liquid-glass::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      border-radius: 28px;
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      filter: url(#liquid-glass-distortion);
+      -webkit-filter: url(#liquid-glass-distortion);
+      isolation: isolate;
+      pointer-events: none;
+    }
+
+    .liquid-glass:not(.dragging):hover {
+      
+      transform: scale(var(--scale-factor)) translateY(-4px);
+      filter: none;
+    }
+
+    @media (max-width: 768px) {
+      .liquid-glass::after {
+        backdrop-filter: blur(2.1px);
+        -webkit-backdrop-filter: blur(2.1px);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .liquid-glass { transition: none; }
+    }
+
+   
+    .profile-card-content {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .profile-avatar-border {
+      position: relative;
+      width: 76px;
+      height: 76px;
+      border-radius: 50%;
+      padding: 2px;
+      background: rgba(255, 255, 255, 0.3);
+      box-sizing: border-box;
+      margin-bottom: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .profile-avatar-border img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 50%;
+      background-color: #1a1a1a;
+      pointer-events: none; 
+    }
+
+    .profile-info h2 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      margin: 0 0 2px 0;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+      letter-spacing: 0.5px;
+      pointer-events: none;
+    }
+
+    .profile-info p {
+      font-size: 0.8rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.75);
+      margin: 0 0 12px 0;
+      font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace;
+      pointer-events: none;
+    }
+
+    .github-stats {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 16px;
+      padding-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      width: 90%;
+      justify-content: center;
+      pointer-events: none;
+    }
+
+    .stat-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .stat-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    .stat-label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255, 255, 255, 0.65);
+      margin-top: 2px;
+    }
+
+    .github-btn {
+      background: rgba(36, 41, 47, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      padding: 8px 20px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s ease, transform 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+      margin-bottom: 12px;
+    }
+
+    .github-btn:hover {
+      background: rgba(36, 41, 47, 0.85);
+      transform: scale(1.02);
+    }
+
+    .github-icon {
+      width: 14px;
+      height: 14px;
+      fill: currentColor;
+    }
+
+    
+    .zoom-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .zoom-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: white;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.2s ease, transform 0.2s ease;
+      padding: 0;
+      line-height: 1;
+    }
+
+    .zoom-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: scale(1.1);
+    }
+    
+    .zoom-btn:active {
+      transform: scale(0.95);
+    }
+
+/*2026 - Seçkin Akay*/
+    </style>
+</head>
+<body>
+
+    <!-- 2. HTML KODLARI (SAYFA YAPISI) BU ALANA YAZILIR -->
+    <!--Seçkin Akay-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SeckinAkay - GitHub</title>
+</head>
+<body>
+
+  
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <filter id="liquid-glass-distortion" x="0%" y="0%" width="100%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012 0.012" numOctaves="2" seed="92" result="noise" />
+        <feGaussianBlur in="noise" stdDeviation="2" result="blurred" />
+        <feDisplacementMap in="SourceGraphic" in2="blurred" scale="85" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
+
+ 
+  <div class="liquid-glass" id="glass-card">
+    <div class="profile-card-content">
+      <div class="profile-avatar-border">
+        <img src="https://avatars.githubusercontent.com/u/64429134?v=4" alt="SeckinAkay Profile">
+      </div>
+      
+      <div class="profile-info">
+        <h2>SEÇKİN</h2>
+        <p>AKAY</p>
+      </div>
+
+      <div class="github-stats">
+        <div class="stat-item">
+          <span class="stat-value">7</span>
+          <span class="stat-label">Depo</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-value">5</span>
+          <span class="stat-label">Takip</span>
+          <!--On 17.06.2026-->
+        </div>
+      </div>
+      
+      <a class="github-btn" href="https://github.com/SeckinAkay/" target="_blank">
+        <svg class="github-icon" viewBox="0 0 16 16" aria-hidden="true">
+          <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+        </svg>
+        Ziyaret
+      </a>
+
+     
+      <div class="zoom-controls">
+        <button class="zoom-btn" id="zoom-out" title="Decrease Size">-</button>
+        <button class="zoom-btn" id="zoom-in" title="Increase Size">+</button>
+      </div>
+
+    </div>
+  </div>
+</body>
+</html>
+<!-- 2026 - Seçkin Akay--->
+
+    <!-- 3. JAVASCRIPT KODLARI BU ALANA YAZILIR -->
+    <script>
+        //Seçkin Akay
+const card = document.getElementById('glass-card');
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    
+   
+    let currentScale = 1;
+    const SCALE_STEP = 0.1;
+    const MAX_SCALE = 2.0;
+    const MIN_SCALE = 0.5;
+
+    zoomInBtn.addEventListener('click', () => {
+      if (currentScale < MAX_SCALE) {
+        currentScale += SCALE_STEP;
+        card.style.setProperty('--scale-factor', currentScale.toFixed(2));
+      }
+    });
+
+    zoomOutBtn.addEventListener('click', () => {
+      if (currentScale > MIN_SCALE) {
+        currentScale -= SCALE_STEP;
+        card.style.setProperty('--scale-factor', currentScale.toFixed(2));
+      }
+    });
+
+
+    let isDragging = false;
+    let startX, startY, initialLeft, initialTop;
+
+    card.addEventListener('mousedown', dragStart);
+    document.addEventListener('mousemove', drag);
+    document.addEventListener('mouseup', dragEnd);
+
+    card.addEventListener('touchstart', dragStart, { passive: false });
+    document.addEventListener('touchmove', drag, { passive: false });
+    document.addEventListener('touchend', dragEnd);
+
+    function dragStart(e) {
+     
+      if (e.target.closest('button') || e.target.closest('a')) return;
+      
+      isDragging = true;
+      card.classList.add('dragging');
+
+      if (e.type === 'touchstart') {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      } else {
+        startX = e.clientX;
+        startY = e.clientY;
+      }
+
+      const rect = card.getBoundingClientRect();
+      if (window.getComputedStyle(card).position !== 'absolute') {
+        card.style.position = 'absolute';
+        card.style.margin = '0';
+        
+        card.style.left = card.offsetLeft + 'px';
+        card.style.top = card.offsetTop + 'px';
+      }
+
+      initialLeft = card.offsetLeft;
+      initialTop = card.offsetTop;
+    }
+
+    function drag(e) {
+      if (!isDragging) return;
+      e.preventDefault(); 
+
+      let currentX, currentY;
+
+      if (e.type === 'touchmove') {
+        currentX = e.touches[0].clientX;
+        currentY = e.touches[0].clientY;
+      } else {
+        currentX = e.clientX;
+        currentY = e.clientY;
+      }
+
+      const diffX = currentX - startX;
+      const diffY = currentY - startY;
+
+      card.style.left = (initialLeft + diffX) + 'px';
+      card.style.top = (initialTop + diffY) + 'px';
+    }
+
+    function dragEnd() {
+      if (!isDragging) return;
+      isDragging = false;
+      card.classList.remove('dragging');
+    }
+
+// 2026 - Seçkin Akay
+    </script>
+
+</body>
+</html>
