@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="tr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>-</title>
+		<!--CSS KODLARI BU ALANA YAZILIR-->
+		<style>
+			/* Sayfa içeriğinin alt bilgiye çarpmaması için taban boşluğu */
+			body {
+			margin: 0;
+			padding-bottom: 60px;
+			min-height: 100vh;
+			box-sizing: border-box;
+			position: relative;
+			}
+
+			/* En altta sabit duracak yapımcı alanı (Footer) */
+			.yapimci-footer {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			width: 100%;
+			height: 50px;
+			background-color: #000000; /* Hafif gri arka plan */
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			border-top: 1px solid #000000;
+			font-family: sans-serif;
+			font-size: 14px;
+			}
+
+			/* Tıklanabilir linkin stili */
+			.yapimci-link {
+			color: #F67938; /* Mavi renk */
+			text-decoration: none; /* Alt çizgiyi kaldırır */
+			font-weight: bold;
+			}
+
+			.yapimci-link:hover {
+			text-decoration: underline; /* Fareyle üzerine gelince altını çizer */
+			}
+
+			/*
+			vars
+			*/
+			:root {
+			--tagcloud-transition-user-duration: 1250ms;
+			--tagcloud-transition-user-ease: ease-in-out;
+			--tagcloud-transition-duration: 250ms;
+			--tagcloud-transition-ease: ease-out;
+			--tagcloud-bg-color-rgb: 0, 0, 0;
+			--tagcloud-animation-duration: 25s;
+			--tagcloud-animation-direction: normal;
+			--tagcloud-animation-play-state: running;
+			--tagcloud-diameter: 32rem;
+			--tagcloud-start-rotation: 54;
+			--tagcloud-controls-diameter: 256rem;
+			--tagcloud-control-bg-color: transparent;
+			--tagcloud-control-bg-hover-color: transparent;
+			--tagcloud-control-bg-checked-color: transparent;
+			--tag-diameter: 5.5rem;
+			--tag-font-color-rgb: 255, 255, 255;
+			--tag-font-family: 'Open Sans', sans-serif;
+			--tag-font-size: 1rem;
+			}
+
+			/*
+			global
+			*/
+			@import url(//fonts.googleapis.com/css?family=Open+Sans);
+
+			*, *::before, *::after {
+			margin: 0;
+			padding: 0;
+			border: 0;
+			box-sizing: border-box;
+			}
+
+			*:focus {
+			outline: none;
+			}
+
+			body {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 100vh;
+			background-color: rgb(var(--tagcloud-bg-color-rgb));
+			overflow: hidden;
+			}
+
+			/*
+			tagcloud
+			*/
+			.tagcloud-wrapper {
+			--_control-diamater: var(--tagcloud-controls-diameter);
+			--_control-radius: calc(var(--_control-diamater) / 2);
+			--_diameter: var(--tagcloud-diameter);
+			--_radius: calc(calc(var(--_diameter) / 2) - calc(var(--tag-diameter) / 2));
+			width: var(--control-diameter);
+			aspect-ratio: 1 / 1;
+			font-family: var(--tag-font-family);
+			font-size: var(--tag-font-size);
+			}
+
+			@media only screen and (max-width: 48rem) {
+			.tagcloud-wrapper {
+			--_control-diamater: calc(var(--tagcloud-controls-diameter) * 0.5);
+			--_diameter: calc(var(--tagcloud-diameter) * 0.88);
+			}
+			}
+			@media only screen and (max-width: 32rem) {
+			.tagcloud-wrapper {
+			--_diameter: calc(var(--tagcloud-diameter) * 0.75);
+			}
+			}
+
+			.tagcloud-wrapper:has(.tagcloud-rotation:hover)  {
+			--tagcloud-animation-play-state: paused;
+			}
+
+			.tagcloud-wrapper .tagcloud-tags {
+			position: absolute;
+			width: var(--_diameter);
+			aspect-ratio: 1 / 1;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%);
+			list-style-type: none;
+			position: relative;
+			transform-style: inherit;
+			animation: tagcloud-rotation var(--tagcloud-animation-duration) var(--tagcloud-animation-direction) linear infinite var(--tagcloud-animation-play-state);
+			}
+
+			@keyframes tagcloud-rotation {
+			from {transform: translate(-50%, -50%) rotateX(0deg);}
+			to {transform: translate(-50%, -50%) rotateX(360deg);}
+			}
+
+			.tagcloud-wrapper .tagcloud-tags:has(.tagcloud-tag div a:hover) .tagcloud-tag:not(:has(div a:hover)) {
+			opacity: 0.25;
+			}
+
+			.tagcloud-wrapper .tagcloud-tag {
+			--_phi: acos(calc(-1 + (2 * var(--index)) / var(--num-elements)));
+			--_theta: calc(sqrt(calc(var(--num-elements) * 3.141592653589793)) * var(--_phi));
+			--_x: calc(cos(var(--_theta)) * sin(var(--_phi)));
+			--_y: calc(sin(var(--_theta)) * sin(var(--_phi)));
+			--_z: calc(cos(var(--_phi)));
+			--_vector-length: sqrt(var(--_x) * var(--_x) + var(--_y) * var(--_y) + var(--_z) * var(--_z));
+			--_normalized-x: calc(var(--_x) / var(--_vector-length));
+			--_normalized-y: calc(var(--_y) / var(--_vector-length));
+			--_normalized-z: calc(var(--_z) / var(--_vector-length));
+			--_scaled-x: calc(var(--_normalized-x) * var(--_radius));
+			--_scaled-y: calc(var(--_normalized-y) * var(--_radius));
+			--_scaled-z: calc(var(--_normalized-z) * var(--_radius));
+			--_final-x: calc(var(--_scaled-x) + var(--_radius));
+			--_final-y: calc(var(--_scaled-y) + var(--_radius));
+			--_final-z: var(--_scaled-z);
+			pointer-events: none;
+			width: var(--tag-diameter);
+			height: var(--tag-diameter);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			position: absolute;
+			transition: opacity var(--tagcloud-transition-duration) var(--tagcloud-transition-ease);
+			transform: translate3d(var(--_final-x), var(--_final-y), var(--_final-z));
+			animation: tagcloud-tag-rotation var(--tagcloud-animation-duration) var(--tagcloud-animation-direction) linear infinite var(--tagcloud-animation-play-state);
+			}
+
+			@keyframes tagcloud-tag-rotation {
+			from {transform: translate3d(var(--_final-x), var(--_final-y), var(--_final-z)) rotateX(360deg);}
+			to {transform: translate3d(var(--_final-x), var(--_final-y), var(--_final-z)) rotateX(0deg);}
+			}
+
+			.tagcloud-wrapper .tagcloud-tag div {
+			transform: rotateZ(calc(var(--_current-rotation) * -1deg));
+			transition: transform var(--tagcloud-transition-user-duration) var(--tagcloud-transition-user-ease);
+			}
+
+			.tagcloud-wrapper .tagcloud-tag div a {
+			pointer-events: initial;
+			color: rgb(var(--tag-font-color-rgb));
+			text-decoration: none;
+			text-shadow: 1px  1px 1px rgb(var(--tagcloud-bg-color-rgb)),
+			1px -1px 1px rgb(var(--tagcloud-bg-color-rgb)),
+			-1px  1px 1px rgb(var(--tagcloud-bg-color-rgb)),
+			-1px -1px 1px rgb(var(--tagcloud-bg-color-rgb)),
+			0 0 1rem rgb(var(--tagcloud-bg-color-rgb));
+			}
+
+			.tagcloud-wrapper .tagcloud-controls {
+			width: var(--_control-diamater);
+			aspect-ratio: 1 / 1;
+			position: relative;
+			--_current-rotation: var(--tagcloud-start-rotation);
+			transform-style: inherit;
+			}
+
+			.tagcloud-wrapper .tagcloud-controls .tagcloud-control-button {
+			--_width: var(--_control-radius);
+			--_height: calc(var(--_control-diamater) * 3.141592653589793 / var(--num-elements) + 1px);
+			--_theta-start: 0;
+			--_theta-length: calc(2 * 3.141592653589793);
+			--_segment: calc(var(--_theta-start) + var(--index) / var(--num-elements) * var(--_theta-length));
+			--_x: calc(var(--_control-radius) * cos(var(--_segment)));
+			--_y: calc(var(--_control-radius) * sin(var(--_segment)) + var(--_control-radius) - var(--_height) / 2);
+			--_rotation: calc(var(--index) / var(--num-elements) * 360deg);
+			position: absolute;
+			left: var(--_x);
+			top: var(--_y);
+			width: var(--_width);
+			height: var(--_height);
+			clip-path: polygon(0% 50%, 100% 0%, 100% 100%);
+			transform-origin: right center;
+			transform: rotate(var(--_rotation));
+			transition: background-color var(--tagcloud-transition-duration) var(--tagcloud-transition-ease);
+			background-color: var(--tagcloud-control-bg-color);
+			}
+
+			.tagcloud-wrapper .tagcloud-controls .tagcloud-control-button input {
+			-webkit-appearance: none;
+			appearance: none;
+			opacity: 0;
+			width: 100%;
+			height: 100%;
+			}
+
+			.tagcloud-wrapper .tagcloud-controls .tagcloud-control-button:has(input:checked) {
+			background-color: var(--tagcloud-control-bg-checked-color);
+			}
+			.tagcloud-wrapper .tagcloud-controls .tagcloud-control-button:has(input:hover) {
+			background-color: var(--tagcloud-control-bg-hover-color);
+			}
+
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(1) input:checked) {
+			--_current-rotation: 108;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(2) input:checked) {
+			--_current-rotation: 126;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(3) input:checked) {
+			--_current-rotation: 144;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(4) input:checked) {
+			--_current-rotation: 162;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(5) input:checked) {
+			--_current-rotation: 180;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(6) input:checked) {
+			--_current-rotation: 198;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(7) input:checked) {
+			--_current-rotation: 216;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(8) input:checked) {
+			--_current-rotation: 234;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(9) input:checked) {
+			--_current-rotation: 252;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(10) input:checked) {
+			--_current-rotation: 270;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(11) input:checked) {
+			--_current-rotation: 288;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(12) input:checked) {
+			--_current-rotation: 306;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(13) input:checked) {
+			--_current-rotation: 324;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(14) input:checked) {
+			--_current-rotation: 342;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(15) input:checked) {
+			--_current-rotation: 0;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(16) input:checked) {
+			--_current-rotation: 18;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(17) input:checked) {
+			--_current-rotation: 36;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(18) input:checked) {
+			--_current-rotation: 54;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(19) input:checked) {
+			--_current-rotation: 72;
+			}
+			.tagcloud-wrapper .tagcloud-controls:has(.tagcloud-control-button:nth-child(20) input:checked) {
+			--_current-rotation: 90;
+			}
+
+			.tagcloud-wrapper .tagcloud-controls .tagcloud-control-button:has(input:checked) ~ .tagcloud-rotation {
+			transform: translate(-50%, -50%) rotate(calc(var(--_current-rotation) * 1deg));
+			}
+
+			.tagcloud-wrapper .tagcloud-controls .tagcloud-control-button:has(input:checked) ~ .tagcloud-rotation .tagcloud-tags .tagcloud-tag div {
+			transform: rotateZ(calc(var(--_current-rotation) * -1deg));
+			}
+
+			.tagcloud-wrapper .tagcloud-controls .tagcloud-rotation {
+			position: absolute;
+			width: var(--_diameter);
+			aspect-ratio: 1 / 1;
+			perspective: calc(var(--_diameter) * 2);
+			transform-style: preserve-3d;
+			left: 50%;
+			top: 50%;
+			background: radial-gradient(rgba(var(--tagcloud-bg-color-rgb), 0.75) 15% , rgba(var(--tagcloud-bg-color-rgb), 0) calc(75% - var(--tag-diameter)));
+			border-radius: 50%;
+			transform: translate(-50%, -50%) rotate(calc(var(--_current-rotation) * 1deg));
+			transition: transform var(--tagcloud-transition-user-duration) var(--tagcloud-transition-user-ease);
+			}
+
+
+		</style>
+	</head>
+	<body>
+		<!-- 2. HTML KODLARI (SAYFA YAPISI) BU ALANA YAZILIR -->
+		<!--Seçkin Akay-->
+		<div class="tagcloud-wrapper">
+
+			<div class="tagcloud-controls" style="--num-elements: 20">
+
+				<div class="tagcloud-control-button" style="--index: 1">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 2">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 3">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 4">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 5">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 6">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 7">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 8">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 9">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 10">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 11">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 12">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 13">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 14">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 15">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 16">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 17">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 18">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 19">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+				<div class="tagcloud-control-button" style="--index: 20">
+					<input type="radio" name="tagcloud-control-input"/>
+				</div>
+
+				<div class="tagcloud-rotation">
+					<ul class="tagcloud-tags" style="--num-elements: 114">
+
+						<li class="tagcloud-tag" style="--index: 1">
+							<div>
+								<a href="https://www.youtube.com/watch?v=48stJq0DuZg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO" target="_blank">Alak</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 2">
+							<div>
+								<a href="https://www.youtube.com/watch?v=xGzoGDnfLNg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=2&pp=iAQB" target="_blank">Kalem</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 3">
+							<div>
+								<a href="https://www.youtube.com/watch?v=_rC7baqxZY8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=3&pp=iAQB" target="_blank">Muzzemmil</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 4">
+							<div>
+								<a href="https://www.youtube.com/watch?v=1tAugifczN0&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=4&pp=iAQB" target="_blank">Muddessir</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 5">
+							<div>
+								<a href="https://www.youtube.com/watch?v=_wayK2l8ptM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=5&pp=iAQB" target="_blank">Fatiha</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 6">
+							<div>
+								<a href="https://www.youtube.com/watch?v=U2kGnY8WP3k&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=6&pp=iAQB" target="_blank">Tebbet</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 7">
+							<div>
+								<a href="https://www.youtube.com/watch?v=yHDE1bKeoDg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=7&pp=iAQB" target="_blank">Tekvir</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 8">
+							<div>
+								<a href="https://www.youtube.com/watch?v=JLlSByOIQ1A&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=8&pp=iAQB" target="_blank">Ala</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 9">
+							<div>
+								<a href="https://www.youtube.com/watch?v=E7qj12MppB4&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=9&pp=iAQB" target="_blank">Leyl</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 10">
+							<div>
+								<a href="https://www.youtube.com/watch?v=uZokP6EwChw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=10&pp=iAQB" target="_blank">Fecr</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 11">
+							<div>
+								<a href="https://www.youtube.com/watch?v=qBnP80YpA5c&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=11&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Duha</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 12">
+							<div>
+								<a href="https://www.youtube.com/watch?v=oOK9hLJYwm8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=12&pp=iAQB" target="_blank">İnşirah</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 13">
+							<div>
+								<a href="https://www.youtube.com/watch?v=Cvn61I4c8RM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=13&pp=iAQB" target="_blank">Asr</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 14">
+							<div>
+								<a href="https://www.youtube.com/watch?v=T51xRG2h15k&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=14&pp=iAQB" target="_blank">Adiyat</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 15">
+							<div>
+								<a href="https://www.youtube.com/watch?v=0iHUO_WIfo4&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=15&pp=iAQB" target="_blank">Kevser</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 16">
+							<div>
+								<a href="https://www.youtube.com/watch?v=T5KbOqqP_x0&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=16&pp=iAQB" target="_blank">Tekasur</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 17">
+							<div>
+								<a href="https://www.youtube.com/watch?v=HSxdkq8heVk&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=17&pp=iAQB" target="_blank">Maun</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 18">
+							<div>
+								<a href="https://www.youtube.com/watch?v=5bwvHcBGjfM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=18&pp=iAQB" target="_blank">Kafirun</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 19">
+							<div>
+								<a href="https://www.youtube.com/watch?v=AhaP99GVjEU&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=19&pp=iAQB" target="_blank">Fil</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 20">
+							<div>
+								<a href="https://www.youtube.com/watch?v=YM607RU47iE&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=20&pp=iAQB" target="_blank">Felak</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 21">
+							<div>
+								<a href="https://www.youtube.com/watch?v=VW7Cy53cwNI&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=21&pp=iAQB" target="_blank">Nas</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 22">
+							<div>
+								<a href="https://www.youtube.com/watch?v=lVr15GUUSI8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=22&pp=iAQB" target="_blank">İhlas</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 23">
+							<div>
+								<a href="https://www.youtube.com/watch?v=YVf4PMaXTu8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=23&pp=iAQB" target="_blank">Necm</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 24">
+							<div>
+								<a href="https://www.youtube.com/watch?v=jbbcjm7x13w&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=24&pp=iAQB" target="_blank">Abese</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 25">
+							<div>
+								<a href="https://www.youtube.com/watch?v=z_zOrkZSdgU&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=25&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Kadir</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 26">
+							<div>
+								<a href="https://www.youtube.com/watch?v=09IRYT6p3OA&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=26&pp=iAQB" target="_blank">Şems</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 27">
+							<div>
+								<a href="https://www.youtube.com/watch?v=Jr1yPGzwfXQ&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=27&pp=iAQB" target="_blank">Buruc</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 28">
+							<div>
+								<a href="https://www.youtube.com/watch?v=T67KBFTTAlE&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=28&pp=iAQB" target="_blank">Tin</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 29">
+							<div>
+								<a href="https://www.youtube.com/watch?v=h_Oqg0gYQiQ&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=29&pp=iAQB" target="_blank">Kureyş</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 30">
+							<div>
+								<a href="https://www.youtube.com/watch?v=BlrEpRq8SQg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=30&pp=iAQB" target="_blank">Karia</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 31">
+							<div>
+								<a href="https://www.youtube.com/watch?v=a22Aa8OHM2g&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=31&pp=iAQB" target="_blank">Kıyamet</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 32">
+							<div>
+								<a href="https://www.youtube.com/watch?v=A1lQWqudubw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=32&pp=iAQB" target="_blank">Humeze</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 33">
+							<div>
+								<a href="https://www.youtube.com/watch?v=4GtLeicoGnw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=33&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Murselat</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 34">
+							<div>
+								<a href="https://www.youtube.com/watch?v=hTC5J8dAbCs&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=34&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Kaf</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 35">
+							<div>
+								<a href="https://www.youtube.com/watch?v=pQ_kuc7ErVA&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=35&pp=iAQB" target="_blank">Beled</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 36">
+							<div>
+								<a href="https://www.youtube.com/watch?v=zd-NrGezX9w&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=36&pp=iAQB" target="_blank">Tarık</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 37">
+							<div>
+								<a href="https://www.youtube.com/watch?v=olqhrm2rza0&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=37&pp=iAQB" target="_blank">Kamer</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 38">
+							<div>
+								<a href="https://www.youtube.com/watch?v=oXb25AKcfFw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=38&pp=iAQB" target="_blank">Sad</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 39">
+							<div>
+								<a href="https://www.youtube.com/watch?v=uo1DYAHBRc8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=39&pp=iAQB" target="_blank">Araf</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 40">
+							<div>
+								<a href="https://www.youtube.com/watch?v=YQgnhfihHDI&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=40&pp=iAQB" target="_blank">Cin</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 41">
+							<div>
+								<a href="https://www.youtube.com/watch?v=tEzxcsageto&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=41&pp=iAQB" target="_blank">Yasin</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 42">
+							<div>
+								<a href="https://www.youtube.com/watch?v=kKiMaQ9FUgc&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=42&pp=iAQB" target="_blank">Furkan</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 43">
+							<div>
+								<a href="https://www.youtube.com/watch?v=mPJWfClXel8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=43&pp=iAQB" target="_blank">Fatır</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 44">
+							<div>
+								<a href="https://www.youtube.com/watch?v=27Fl7NqT64w&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=44&pp=iAQB" target="_blank">Meryem</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 45">
+							<div>
+								<a href="https://www.youtube.com/watch?v=ghjpcQ1Ilp8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=45&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Taha</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 46">
+							<div>
+								<a href="https://www.youtube.com/watch?v=EwWSe0x9gKY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=46&pp=iAQB" target="_blank">Vakia</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 47">
+							<div>
+								<a href="https://www.youtube.com/watch?v=ICKWbma_P5g&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=47&pp=iAQB" target="_blank">Şuara</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 48">
+							<div>
+								<a href="https://www.youtube.com/watch?v=NJ7pjLFOrMI&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=48&pp=iAQB" target="_blank">Neml</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 49">
+							<div>
+								<a href="https://www.youtube.com/watch?v=vD5nkr6ITu4&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=49&pp=iAQB" target="_blank">Kasas</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 50">
+							<div>
+								<a href="https://www.youtube.com/watch?v=kM97MhHRqv4&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=50&pp=iAQB" target="_blank">İsra</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 51">
+							<div>
+								<a href="https://www.youtube.com/watch?v=ZpLYx4GW1jM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=51&pp=iAQB" target="_blank">Yunus</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 52">
+							<div>
+								<a href="https://www.youtube.com/watch?v=D7o0MZUW0S8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=52&pp=iAQB" target="_blank">Hud</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 53">
+							<div>
+								<a href="https://www.youtube.com/watch?v=fcJ7uA2P1oA&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=53&pp=iAQB" target="_blank">Yusuf</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 54">
+							<div>
+								<a href="https://www.youtube.com/watch?v=Ok_lDxCWevY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=54&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Hicr</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 55">
+							<div>
+								<a href="https://www.youtube.com/watch?v=PEv-y8mW7_w&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=55&pp=iAQB" target="_blank">Enam</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 56">
+							<div>
+								<a href="https://www.youtube.com/watch?v=9M2XkQMSi9c&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=56&pp=iAQB" target="_blank">Saffat</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 57">
+							<div>
+								<a href="https://www.youtube.com/watch?v=_UtE4S8UGRQ&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=57&pp=iAQB" target="_blank">Lokman</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 58">
+							<div>
+								<a href="https://www.youtube.com/watch?v=XYZa8POMBXw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=58&pp=iAQB" target="_blank">Sebe</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 59">
+							<div>
+								<a href="https://www.youtube.com/watch?v=G1hU63uZPTM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=59&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Zümer</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 60">
+							<div>
+								<a href="https://www.youtube.com/watch?v=BnXDLWDThpw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=60&pp=iAQB" target="_blank">Mümin</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 61">
+							<div>
+								<a href="https://www.youtube.com/watch?v=jNMaL_kuciA&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=61&pp=iAQB" target="_blank">Fussilet</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 62">
+							<div>
+								<a href="https://www.youtube.com/watch?v=vx5AyVcPhZM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=62&pp=iAQB" target="_blank">Şura</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 63">
+							<div>
+								<a href="https://www.youtube.com/watch?v=O2aqBW5kQoQ&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=63&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Zuhruf</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 64">
+							<div>
+								<a href="https://www.youtube.com/watch?v=gehAVNzsvJs&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=64&pp=iAQB" target="_blank">Duhan</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 65">
+							<div>
+								<a href="https://www.youtube.com/watch?v=sSh5Bdr22aM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=65&pp=iAQB" target="_blank">Casiye</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 66">
+							<div>
+								<a href="https://www.youtube.com/watch?v=P_spX7tPGjw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=66&pp=iAQB" target="_blank">Ahkaf</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 67">
+							<div>
+								<a href="https://www.youtube.com/watch?v=foh08nxY33Q&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=67&pp=iAQB" target="_blank">Zariyat</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 68">
+							<div>
+								<a href="https://www.youtube.com/watch?v=rZYxlYvOrbU&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=68&pp=iAQB" target="_blank">Gaşiye</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 69">
+							<div>
+								<a href="https://www.youtube.com/watch?v=f7UQfZ-SbAY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=69&pp=iAQB" target="_blank">Kehf</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 70">
+							<div>
+								<a href="https://www.youtube.com/watch?v=HKjUP8x4kn8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=70&pp=iAQB" target="_blank">Nahl</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 71">
+							<div>
+								<a href="https://www.youtube.com/watch?v=xN40RKLlNSg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=71&pp=iAQB" target="_blank">Nuh</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 72">
+							<div>
+								<a href="https://www.youtube.com/watch?v=L_b5ZKXg6FQ&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=72&pp=iAQB" target="_blank">İbrahim</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 73">
+							<div>
+								<a href="https://www.youtube.com/watch?v=TU6eioSla70&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=73&pp=iAQB" target="_blank">Enbiya</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 74">
+							<div>
+								<a href="https://www.youtube.com/watch?v=jfEANWVrdvo&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=74&pp=iAQB" target="_blank">Muminun</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 75">
+							<div>
+								<a href="https://www.youtube.com/watch?v=iwlBGeCxgn8&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=75&pp=iAQB" target="_blank">Secde</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 76">
+							<div>
+								<a href="https://www.youtube.com/watch?v=EHsBWjfODrs&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=76&pp=iAQB" target="_blank">Tur</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 77">
+							<div>
+								<a href="https://www.youtube.com/watch?v=M77I7YyRNEY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=77&pp=iAQB" target="_blank">Mulk</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 78">
+							<div>
+								<a href="https://www.youtube.com/watch?v=4HW0DYTwWVg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=78&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Hakka</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 79">
+							<div>
+								<a href="https://www.youtube.com/watch?v=qf18We7e18k&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=79&pp=iAQB" target="_blank">Mearic</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 80">
+							<div>
+								<a href="https://www.youtube.com/watch?v=JllJidUSbOc&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=80&pp=iAQB" target="_blank">Nebe</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 81">
+							<div>
+								<a href="https://www.youtube.com/watch?v=_JgYRTv_Qsw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=81&pp=iAQB" target="_blank">Naziyat</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 82">
+							<div>
+								<a href="https://www.youtube.com/watch?v=jlA6REXJRIE&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=82&pp=iAQB" target="_blank">İnfitar</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 83">
+							<div>
+								<a href="https://www.youtube.com/watch?v=TlWbXe8k2kY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=83&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">İnşikak</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 84">
+							<div>
+								<a href="https://www.youtube.com/watch?v=OPzWGcc49Eo&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=84&pp=iAQB" target="_blank">Rum</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 85">
+							<div>
+								<a href="https://www.youtube.com/watch?v=kM2Jeq9toAw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=85&pp=iAQB" target="_blank">Ankebut</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 86">
+							<div>
+								<a href="https://www.youtube.com/watch?v=8H5D80eRIXI&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=86&pp=iAQB" target="_blank">Mutaffifin</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 87">
+							<div>
+								<a href="https://www.youtube.com/watch?v=gazrfLT4uEE&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=87&pp=iAQB" target="_blank">Bakara</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 88">
+							<div>
+								<a href="https://www.youtube.com/watch?v=DKrHO8tl-EA&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=88&pp=iAQB" target="_blank">Enfal</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 89">
+							<div>
+								<a href="https://www.youtube.com/watch?v=-0MkvIvlywo&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=89&pp=iAQB" target="_blank">Aliimran</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 90">
+							<div>
+								<a href="https://www.youtube.com/watch?v=jEurH3vB3Fo&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=90&pp=iAQB" target="_blank">Ahzab</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 91">
+							<div>
+								<a href="https://www.youtube.com/watch?v=TVLd82jl1wY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=91&pp=iAQB" target="_blank">Mumtehine</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 92">
+							<div>
+								<a href="https://www.youtube.com/watch?v=IWkyJerwoYk&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=92&pp=iAQB" target="_blank">Nisa</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 93">
+							<div>
+								<a href="https://www.youtube.com/watch?v=CtHzzu8D6ZY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=93&pp=iAQB" target="_blank">Zilzal</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 94">
+							<div>
+								<a href="https://www.youtube.com/watch?v=QX-bHd14j6U&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=94&pp=iAQB" target="_blank">Hadid</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 95">
+							<div>
+								<a href="https://www.youtube.com/watch?v=A3jWa7M8N2Q&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=95&pp=iAQB" target="_blank">Muhammed</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 96">
+							<div>
+								<a href="https://www.youtube.com/watch?v=rZr4HOsvNMs&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=96&pp=iAQB0gcJCS0MAYcqIYzv" target="_blank">Rad</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 97">
+							<div>
+								<a href="https://www.youtube.com/watch?v=U56GwLEDIPo&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=97&pp=iAQB" target="_blank">Rahman</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 98">
+							<div>
+								<a href="https://www.youtube.com/watch?v=k0xfYvmV3GY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=98&pp=iAQB" target="_blank">İnsan</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 99">
+							<div>
+								<a href="https://www.youtube.com/watch?v=lN8fZBJRFg0&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=99&pp=iAQB" target="_blank">Talak</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 100">
+							<div>
+								<a href="https://www.youtube.com/watch?v=Blg-Y7t0pLk&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=100&pp=iAQB" target="_blank">Beyyine</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 101">
+							<div>
+								<a href="https://www.youtube.com/watch?v=uTxG_mkFTrU&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=101&pp=iAQB" target="_blank">Haşr</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 102">
+							<div>
+								<a href="https://www.youtube.com/watch?v=ATqsDRFm72I&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=102&pp=iAQB" target="_blank">Nur</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 103">
+							<div>
+								<a href="https://www.youtube.com/watch?v=3xzS-ApcEtg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=103&pp=iAQB" target="_blank">Hac</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 104">
+							<div>
+								<a href="https://www.youtube.com/watch?v=q6FRBtYyuYA&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=104&pp=iAQB" target="_blank">Munafikun</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 105">
+							<div>
+								<a href="https://www.youtube.com/watch?v=gx7pKLFnb0A&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=105&pp=iAQB" target="_blank">Mucadele</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 106">
+							<div>
+								<a href="https://www.youtube.com/watch?v=FMXTcreZrDg&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=106&pp=iAQB" target="_blank">Hucurat</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 107">
+							<div>
+								<a href="https://www.youtube.com/watch?v=D8vWeGfe1Ss&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=107&pp=iAQB" target="_blank">Tahrim</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 108">
+							<div>
+								<a href="https://www.youtube.com/watch?v=PrcMyg1iPxk&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=108&pp=iAQB" target="_blank">Tegabun</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 109">
+							<div>
+								<a href="https://www.youtube.com/watch?v=oL5UxKE0uVY&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=109&pp=iAQB" target="_blank">Saf</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 110">
+							<div>
+								<a href="https://www.youtube.com/watch?v=XjQTDRBb9NM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=110&pp=iAQB" target="_blank">Cuma</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 111">
+							<div>
+								<a href="https://www.youtube.com/watch?v=WVObg6ia6Jw&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=111&pp=iAQB" target="_blank">Fetif</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 112">
+							<div>
+								<a href="https://www.youtube.com/watch?v=r2_OWXB1Wyo&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=112&pp=iAQB" target="_blank">Maide</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 113">
+							<div>
+								<a href="https://www.youtube.com/watch?v=nzl1YYh6TBU&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=113&pp=iAQB" target="_blank">Tevbe</a>
+							</div>
+						</li>
+						<li class="tagcloud-tag" style="--index: 114">
+							<div>
+								<a href="https://www.youtube.com/watch?v=7tGu39z7UPM&list=PLx_U5X4iqIseNfeErMHq6EECVLxV2sjRO&index=114&pp=iAQB" target="_blank">Nasr</a>
+							</div>
+						</li>
+					</ul>
+				</div>
+
+			</div>
+
+		</div>
+
+	</body>
+</html>
+<!-- 2. HTML KODLARI (SAYFA YAPISI) BU ALANA YAZILIR -->
+<!--Seçkin Akay-->
+
+
+<!-- Yapımcı Bilgisi Alanı -->
+<footer class="yapimci-footer">
+	<span>Hazırlayan:&nbsp;</span>
+	<!-- "URL_ADRESI" yazan yere gitmesini istediğiniz linki (örn: https://seckinakay.com) ekleyin -->
+	<a href="https://seckinakay.com" target="_blank" class="yapimci-link">Seçkin Akay</a>
+</footer>
+
+<!-- 3. JAVASCRIPT KODLARI BU ALANA YAZILIR -->
+<script>
+
+</script>
+</body>
+</html>
