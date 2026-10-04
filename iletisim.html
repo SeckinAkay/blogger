@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="tr">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="Seçkin Akay" content="iletişim" />
+		<title>-</title>
+		<!--CSS KODLARI BU ALANA YAZILIR-->
+		<style>
+
+			* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			}
+
+			body {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			min-height: 100vh;
+			background: linear-gradient(45deg, #57B8FF, #0A1931);
+			padding: 20px;
+			}
+
+			.container {
+			text-align: center;
+			max-width: 800px;
+			width: 100%;
+			}
+
+			h1 {
+			color: white;
+			margin-bottom: 50px;
+			font-size: 2.5rem;
+			text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+			}
+
+			.flip-container {
+			display: flex;
+			flex-wrap: wrap;
+			justify-content: center;
+			gap: 30px;
+			}
+
+			.flip-box {
+			background-color: transparent;
+			width: 200px;
+			height: 200px;
+			perspective: 1000px;
+			cursor: pointer;
+			}
+
+			.flip-box-inner {
+			position: relative;
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			transition: transform 0.6s;
+			transform-style: preserve-3d;
+			box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+			border-radius: 10px;
+			}
+
+			.flip-box:hover .flip-box-inner {
+			transform: rotateY(180deg);
+			}
+
+			.flip-box-front, .flip-box-back {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			-webkit-backface-visibility: hidden;
+			backface-visibility: hidden;
+			border-radius: 10px;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			padding: 20px;
+			}
+
+			.flip-box-front {
+			background-color: white;
+			color: #333;
+			}
+
+			.flip-box-back {
+			background-color: #000000;
+			color: white;
+			transform: rotateY(180deg);
+			}
+
+			.flip-box h2 {
+			font-size: 1.5rem;
+			margin-bottom: 10px;
+			}
+
+			.flip-box p {
+			font-size: 0.9rem;
+			line-height: 1.4;
+			}
+
+			.icon {
+			font-size: 2.5rem;
+			margin-bottom: 15px;
+			}
+
+			.flip-box:nth-child(2) .flip-box-back {
+			background-color: #484848;
+			}
+
+			.flip-box:nth-child(3) .flip-box-back {
+			background-color: #45b7d1;
+			}
+
+			.flip-box:nth-child(4) .flip-box-back {
+			background-color: #ffa502;
+			}
+
+			.instructions {
+			margin-top: 50px;
+			color: white;
+			background-color: rgba(255, 255, 255, 0.1);
+			padding: 20px;
+			border-radius: 10px;
+			max-width: 600px;
+			margin-left: auto;
+			margin-right: auto;
+			}
+
+			.instructions h2 {
+			margin-bottom: 10px;
+			}
+
+			.instructions p {
+			line-height: 1.6;
+			}
+
+		</style>
+	</head>
+	<body>
+		<!-- 2. HTML KODLARI (SAYFA YAPISI) BU ALANA YAZILIR -->
+		<!--Seçkin Akay-->
+		<body>
+			<div class="container">
+				<h1>Hoşgeldiniz</h1>
+
+				<div class="flip-container">
+					<div class="flip-box">
+						<div class="flip-box-inner">
+							<div class="flip-box-front">
+								<div class="icon">📧</div>
+								<h2>Email</h2>
+								<p>akay_bilgisayar@hotmail.com</p>
+							</div>
+							<div class="flip-box-back">
+								<h2>E-Posta Adresim</h2>
+								<p>akay_bilgisayar@hotmail.com</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="flip-box">
+						<div class="flip-box-inner">
+							<div class="flip-box-front">
+								<div class="icon">📍</div>
+								<h2>Lokasyon</h2>
+								<p>KONYA TÜRKİYE</p>
+							</div>
+							<div class="flip-box-back">
+								<h2>Bulunduğum Yerler</h2>
+								<p>Konya, Antalya, İstanbul</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="flip-box">
+						<div class="flip-box-inner">
+							<div class="flip-box-front">
+								<div class="icon">📞</div>
+								<h2>Telefon</h2>
+								<p>+90 542 ... ...</p>
+							</div>
+							<div class="flip-box-back">
+								<h2>Lütfen Email Gönderin</h2>
+								<p>+9 (542) ...-....</p>
+							</div>
+						</div>
+					</div>
+
+					<div class="flip-box">
+						<div class="flip-box-inner">
+							<div class="flip-box-front">
+								<div class="icon">⏰</div>
+								<h2>Zaman</h2>
+								<p>Çalışma Saatleri</p>
+							</div>
+							<div class="flip-box-back">
+								<h2>Uygun Saatler</h2>
+								<p>
+									Pazartesi-Cuma: 9:00-17:00<br>.</p>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="instructions">
+					<h2>İyi Çalışmalar...</h2>
+					<p>Görüşmek Üzere.</p>
+				</div>
+			</div>
+		</body>
+
+
+		<!-- 3. JAVASCRIPT KODLARI BU ALANA YAZILIR -->
+		<script>
+
+		</script>
+	</body>
+</html>
